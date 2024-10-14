@@ -1,0 +1,4 @@
+TestVal: "test-from-yaml"
+
+DbConf:
+  Host: localhost
