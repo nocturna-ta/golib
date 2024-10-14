@@ -3,8 +3,9 @@ package handler
 import (
 	"context"
 	"fmt"
-	"golib/event"
-	"golib/log"
+	"github.com/nocturna-ta/golib/event"
+	"github.com/nocturna-ta/golib/log"
+
 	"runtime/debug"
 	"sort"
 	"time"

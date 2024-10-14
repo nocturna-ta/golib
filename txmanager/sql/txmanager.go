@@ -5,10 +5,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	libSql "golib/database/sql"
-	"golib/log"
-	"golib/txmanager"
-	"golib/txmanager/utils"
+	libSql "github.com/nocturna-ta/golib/database/sql"
+	"github.com/nocturna-ta/golib/log"
+	"github.com/nocturna-ta/golib/txmanager"
+	"github.com/nocturna-ta/golib/txmanager/utils"
 )
 
 func init() {

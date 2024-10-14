@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/IBM/sarama"
 	"github.com/mitchellh/mapstructure"
-	"golib/event"
+	"github.com/nocturna-ta/golib/event"
 	"log"
 	"strconv"
 )

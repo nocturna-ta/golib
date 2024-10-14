@@ -3,7 +3,7 @@ package elastic
 import (
 	elasticV7 "github.com/elastic/go-elasticsearch/v7"
 	elasticV8 "github.com/elastic/go-elasticsearch/v8"
-	"golib/log"
+	"log"
 )
 
 type Client interface {

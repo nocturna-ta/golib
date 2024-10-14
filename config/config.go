@@ -5,8 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/jinzhu/configor"
-	"golib/http"
-	"golib/log"
+	"github.com/nocturna-ta/golib/http"
+	"github.com/nocturna-ta/golib/log"
+
 	"gopkg.in/yaml.v2"
 	"net/url"
 	"os"

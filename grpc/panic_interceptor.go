@@ -3,7 +3,7 @@ package grpc
 import (
 	"context"
 	"fmt"
-	"golib/log"
+	"github.com/nocturna-ta/golib/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

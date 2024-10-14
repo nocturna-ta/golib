@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
-	"golib/custerr"
-	"golib/log"
-	"golib/response"
-	"golib/response/rest"
+	"github.com/nocturna-ta/golib/custerr"
+	"github.com/nocturna-ta/golib/log"
+	"github.com/nocturna-ta/golib/response"
+	"github.com/nocturna-ta/golib/response/rest"
+
 	"net/http"
 	"runtime/debug"
 )

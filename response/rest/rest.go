@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
-	"golib/context"
-	"golib/custerr"
-	"golib/log"
-	"golib/response"
+	"github.com/nocturna-ta/golib/context"
+	"github.com/nocturna-ta/golib/custerr"
+	"github.com/nocturna-ta/golib/log"
+	"github.com/nocturna-ta/golib/response"
+
 	"io"
 	"net/http"
 )

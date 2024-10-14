@@ -7,7 +7,7 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/utils"
-	"golib/log"
+	"github.com/nocturna-ta/golib/log"
 	"io"
 	"net/http"
 	"net/url"

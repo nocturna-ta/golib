@@ -3,12 +3,12 @@ package mongodb
 import (
 	"context"
 	"github.com/newrelic/go-agent/v3/integrations/nrmongo"
+	"github.com/nocturna-ta/golib/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/bsoncodec"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
-	"golib/log"
 	"time"
 )
 

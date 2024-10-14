@@ -5,9 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	libCtx "golib/context"
-	"golib/log"
-	"golib/tracing"
+	libCtx "github.com/nocturna-ta/golib/context"
+	"github.com/nocturna-ta/golib/log"
+	"github.com/nocturna-ta/golib/tracing"
+
 	"io"
 	"mime/multipart"
 	"net/http"

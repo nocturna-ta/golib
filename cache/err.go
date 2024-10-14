@@ -1,8 +1,8 @@
 package cache
 
 import (
-	"golib/custerr"
-	"golib/response"
+	"github.com/nocturna-ta/golib/custerr"
+	"github.com/nocturna-ta/golib/response"
 )
 
 var (

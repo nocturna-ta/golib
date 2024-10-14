@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	libCtx "golib/context"
+	libCtx "github.com/nocturna-ta/golib/context"
 )
 
 // requestContextHandler trying to get RequestContext from request header and save it in current context

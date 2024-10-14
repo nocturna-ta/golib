@@ -2,8 +2,8 @@ package newrelic
 
 import (
 	"github.com/newrelic/go-agent/v3/newrelic"
+	"github.com/nocturna-ta/golib/log"
 	"github.com/valyala/fasthttp"
-	"golib/log"
 	"net/http"
 	"net/url"
 )

@@ -5,9 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/getsentry/sentry-go"
+	"github.com/nocturna-ta/golib/custerr"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"golib/custerr"
+
 	"os"
 	"runtime"
 	"strings"

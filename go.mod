@@ -7,7 +7,7 @@ require (
 	github.com/avast/retry-go/v4 v4.6.0
 	github.com/elastic/go-elasticsearch/v7 v7.17.10
 	github.com/elastic/go-elasticsearch/v8 v8.15.0
-	github.com/getsentry/sentry-go v0.29.0
+	github.com/getsentry/sentry-go v0.25.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-redsync/redsync/v4 v4.13.0
 	github.com/go-sql-driver/mysql v1.8.1

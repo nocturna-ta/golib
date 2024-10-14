@@ -1,7 +1,7 @@
 package syncmap
 
 import (
-	"golib/utils/maps"
+	"github.com/nocturna-ta/golib/utils/maps"
 	"sync"
 )
 

@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"github.com/IBM/sarama"
 	"github.com/mitchellh/mapstructure"
-	"golib/event"
-	"golib/log"
-	"golib/tracing"
+	"github.com/nocturna-ta/golib/event"
+	"github.com/nocturna-ta/golib/log"
+	"github.com/nocturna-ta/golib/tracing"
+
 	"strconv"
 	"time"
 )

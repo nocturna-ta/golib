@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"github.com/avast/retry-go/v4"
 	"github.com/google/uuid"
-	libCtx "golib/context"
-	"golib/event"
-	"golib/log"
+	libCtx "github.com/nocturna-ta/golib/context"
+	"github.com/nocturna-ta/golib/event"
+	"github.com/nocturna-ta/golib/log"
+
 	"time"
 )
 

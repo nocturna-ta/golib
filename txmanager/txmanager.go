@@ -3,7 +3,7 @@ package txmanager
 import (
 	"context"
 	"errors"
-	"golib/tracing"
+	"github.com/nocturna-ta/golib/tracing"
 )
 
 var (

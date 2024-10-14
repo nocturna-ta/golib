@@ -3,7 +3,7 @@ package mocks_cache
 import (
 	context "context"
 
-	cache "golib/cache"
+	cache "github.com/nocturna-ta/golib/cache"
 
 	mock "github.com/stretchr/testify/mock"
 )

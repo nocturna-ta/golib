@@ -2,7 +2,7 @@ package grpc
 
 import (
 	"github.com/newrelic/go-agent/v3/integrations/nrgrpc"
-	"golib/log"
+	"github.com/nocturna-ta/golib/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"

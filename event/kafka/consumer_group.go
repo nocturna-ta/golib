@@ -3,8 +3,8 @@ package kafka
 import (
 	"context"
 	"github.com/IBM/sarama"
-	"golib/event"
-	"golib/log"
+	"github.com/nocturna-ta/golib/event"
+	"github.com/nocturna-ta/golib/log"
 )
 
 type (

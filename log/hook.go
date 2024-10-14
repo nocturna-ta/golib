@@ -1,8 +1,8 @@
 package log
 
 import (
+	libCtx "github.com/nocturna-ta/golib/context"
 	"github.com/rs/zerolog"
-	libCtx "golib/context"
 )
 
 type TracingHook struct{}

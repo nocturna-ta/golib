@@ -3,8 +3,8 @@ package grpc
 import (
 	"context"
 	"github.com/google/uuid"
-	libCtx "golib/context"
-	"golib/log"
+	libCtx "github.com/nocturna-ta/golib/context"
+	"github.com/nocturna-ta/golib/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"

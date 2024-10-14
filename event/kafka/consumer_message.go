@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/IBM/sarama"
-	"golib/event"
+	"github.com/nocturna-ta/golib/event"
 )
 
 type (

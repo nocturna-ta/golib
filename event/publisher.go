@@ -3,7 +3,7 @@ package event
 import (
 	"context"
 	"errors"
-	libCtx "golib/context"
+	libCtx "github.com/nocturna-ta/golib/context"
 	"time"
 )
 

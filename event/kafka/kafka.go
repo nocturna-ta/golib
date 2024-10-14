@@ -3,8 +3,8 @@ package kafka
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"golib/event"
-	"golib/log"
+	"github.com/nocturna-ta/golib/event"
+
 	"os"
 )
 
