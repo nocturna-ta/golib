@@ -9,15 +9,12 @@ import (
 	"io"
 )
 
-func Encrypt(plaintext string, key []byte) (string, error) {
+func (e *Encryption) Encrypt(plaintext string) (string, error) {
 	if len(plaintext) == 0 {
 		return "", ErrEmptyPlaintext
 	}
-	if len(key) != keySize {
-		return "", ErrInvalidKey
-	}
 
-	block, err := aes.NewCipher(key)
+	block, err := aes.NewCipher(e.key)
 	if err != nil {
 		return "", errors.New("error creating AES cipher")
 	}

@@ -1,10 +1,8 @@
 package encryption
 
 import (
-	"crypto/rand"
 	"encoding/base64"
 	"errors"
-	"io"
 )
 
 const (
@@ -16,29 +14,20 @@ var (
 	ErrInvalidKey     = errors.New("invalid key")
 )
 
-func GenerateKey() ([]byte, error) {
-	key := make([]byte, keySize)
-	if _, err := io.ReadFull(rand.Reader, key); err != nil {
-		return nil, errors.New("failed to generate key: " + err.Error())
-	}
-	return key, nil
+type Encryption struct {
+	key []byte
 }
 
-func GenerateKeyString() (string, error) {
-	key, err := GenerateKey()
+func NewEncryption(encodedKey string) (*Encryption, error) {
+	key, err := base64.StdEncoding.DecodeString(encodedKey)
 	if err != nil {
-		return "", err
+		return nil, errors.New("failed to decode key")
 	}
 
-	return base64.StdEncoding.EncodeToString(key), nil
-}
-func ParseKeyString(keyStr string) ([]byte, error) {
-	key, err := base64.StdEncoding.DecodeString(keyStr)
-	if err != nil {
-		return nil, errors.New("failed to decode key: " + err.Error())
-	}
 	if len(key) != keySize {
 		return nil, ErrInvalidKey
 	}
-	return key, nil
+
+	return &Encryption{key: key}, nil
+
 }

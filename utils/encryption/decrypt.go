@@ -7,17 +7,13 @@ import (
 	"errors"
 )
 
-func Decrypt(encryptedString string, key []byte) (string, error) {
-	if len(key) != keySize {
-		return "", ErrInvalidKey
-	}
-
+func (e *Encryption) Decrypt(encryptedString string) (string, error) {
 	cipherText, err := base64.StdEncoding.DecodeString(encryptedString)
 	if err != nil {
 		return "", errors.New("error decoding encrypted string")
 	}
 
-	block, err := aes.NewCipher(key)
+	block, err := aes.NewCipher(e.key)
 	if err != nil {
 		return "", errors.New("error creating cipher")
 	}
