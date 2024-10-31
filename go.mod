@@ -1,13 +1,13 @@
 module github.com/nocturna-ta/golib
 
-go 1.22.3
+go 1.23.2
 
 require (
 	github.com/IBM/sarama v1.43.3
 	github.com/avast/retry-go/v4 v4.6.0
 	github.com/elastic/go-elasticsearch/v7 v7.17.10
 	github.com/elastic/go-elasticsearch/v8 v8.15.0
-	github.com/getsentry/sentry-go v0.25.0
+	github.com/getsentry/sentry-go v0.27.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-redsync/redsync/v4 v4.13.0
 	github.com/go-sql-driver/mysql v1.8.1

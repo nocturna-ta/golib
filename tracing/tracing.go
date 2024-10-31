@@ -28,16 +28,12 @@ type (
 func StartSpanFromContext(ctx context.Context, spanName string) (SpanTrace, context.Context) {
 	spanTrace := &span{}
 
-	nrTxnVal := ctx.Value(NewRelicTransactionKey)
-	if nrTxnVal != nil {
-		nrTxn, ok := nrTxnVal.(*newrelic.Transaction)
-		if ok {
-			segment := nrTxn.StartSegment(spanName)
-			spanTrace.nrSegment = segment
-		}
+	if txn := newrelic.FromContext(ctx); txn != nil {
+		segment := txn.StartSegment(spanName)
+		spanTrace.nrSegment = segment
 	}
 
-	spanTrace.sentrySpan = sentry.StartSpan(ctx, spanName, sentry.OpName(spanName))
+	spanTrace.sentrySpan = sentry.StartSpan(ctx, spanName, sentry.WithOpName(spanName))
 	ctx = spanTrace.sentrySpan.Context()
 
 	return spanTrace, ctx
