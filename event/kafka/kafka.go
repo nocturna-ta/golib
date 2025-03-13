@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"github.com/nocturna-ta/golib/event"
+	"github.com/nocturna-ta/golib/log"
 
 	"os"
 )
