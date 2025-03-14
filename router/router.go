@@ -87,8 +87,6 @@ func New(opt *Options) *FastRouter {
 
 	app := fiber.New(config)
 
-	app.Use()
-
 	if opt.CorsConfig != nil {
 		app.Use(corsFromConfig(*opt.CorsConfig))
 	}
