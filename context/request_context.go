@@ -11,9 +11,8 @@ const (
 	MetadataRetryAttempts = "md-retry-attempts"
 	MetadataLogRefId      = "md-log-reference-id"
 	XUserId               = "X-User-Id"
-	XRequestId            = "X-Request-Id"
 	XChannelId            = "X-Channel-Id"
-	XAccountId            = "X-Account-Id"
+	XRequestId            = "X-Request-Id"
 )
 
 var (
@@ -28,7 +27,6 @@ type RequestContext struct {
 	UserId    string `json:"user-id,omitempty"`
 	RequestId string `json:"request-id,omitempty"`
 	ChannelId string `json:"channel-id,omitempty"`
-	AccountId string `json:"account-id,omitempty"`
 }
 
 func ReadRequestId(ctx context.Context) string {
@@ -63,11 +61,6 @@ func GetRequestContext(ctx context.Context) (*RequestContext, error) {
 	}
 
 	return &requestCtx, nil
-}
-
-func (rc *RequestContext) GetAccountId() uuid.UUID {
-	res, _ := uuid.Parse(rc.AccountId)
-	return res
 }
 
 func (rc *RequestContext) GetUserId() uuid.UUID {

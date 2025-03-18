@@ -10,7 +10,7 @@ import (
 // requestContextHandler trying to get RequestContext from request header and save it in current context
 // RequestContext value might be empty if there is no header found (can be from public call)
 func requestContextHandler(c *fiber.Ctx) error {
-	var userId, requestId, accountId, channelId string
+	var userId, requestId, channelId string
 
 	userId = string(c.Request().Header.Peek(libCtx.XUserId))
 
@@ -20,12 +20,10 @@ func requestContextHandler(c *fiber.Ctx) error {
 	}
 
 	channelId = string(c.Request().Header.Peek(libCtx.XChannelId))
-	accountId = string(c.Request().Header.Peek(libCtx.XAccountId))
 
 	reqCtx := libCtx.RequestContext{
 		UserId:    userId,
 		RequestId: requestId,
-		AccountId: accountId,
 		ChannelId: channelId,
 	}
 
@@ -49,15 +47,6 @@ func validateRequestContext(ctx context.Context) error {
 	}
 
 	_, err = uuid.Parse(rc.UserId)
-	if err != nil {
-		return errUnauthorized
-	}
-
-	if rc.AccountId == "" {
-		return errUnauthorized
-	}
-
-	_, err = uuid.Parse(rc.AccountId)
 	if err != nil {
 		return errUnauthorized
 	}
