@@ -105,7 +105,7 @@ func hash(m any) (string, error) {
 }
 
 func requestContextFromMetadata(ctx context.Context, message *EventConsumeMessage) context.Context {
-	var requestId, userId, channelId, accountId string
+	var requestId, userId, channelId, addressId string
 	if val, ok := message.Metadata[libCtx.XRequestId]; ok {
 		if valStr, ok := val.(string); ok {
 			requestId = valStr
@@ -137,17 +137,18 @@ func requestContextFromMetadata(ctx context.Context, message *EventConsumeMessag
 		}
 	}
 
-	if val, ok := message.Metadata[libCtx.XAccountId]; ok {
+	if val, ok := message.Metadata[libCtx.XAddressId]; ok {
 		if valStr, ok := val.(string); ok {
-			accountId = valStr
+			addressId = valStr
 		}
+
 	}
 
 	reqCtx := libCtx.RequestContext{
 		UserId:    userId,
 		RequestId: requestId,
 		ChannelId: channelId,
-		AccountId: accountId,
+		Address:   addressId,
 	}
 
 	ctx = context.WithValue(ctx, libCtx.RequestIdKey, requestId)
