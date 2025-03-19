@@ -21,10 +21,13 @@ func requestContextHandler(c *fiber.Ctx) error {
 
 	channelId = string(c.Request().Header.Peek(libCtx.XChannelId))
 
+	addressId := string(c.Request().Header.Peek(libCtx.XAddressId))
+
 	reqCtx := libCtx.RequestContext{
 		UserId:    userId,
 		RequestId: requestId,
 		ChannelId: channelId,
+		Address:   addressId,
 	}
 
 	ctx := c.UserContext()
