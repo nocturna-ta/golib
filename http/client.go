@@ -257,7 +257,7 @@ func addHeaderFromCtx(ctx context.Context, req *http.Request) {
 		req.Header.Add(libCtx.XChannelId, reqCtx.ChannelId)
 	}
 
-	if reqCtx.AccountId != "" {
-		req.Header.Add(libCtx.XAccountId, reqCtx.AccountId)
+	if reqCtx.Address != "" {
+		req.Header.Add(libCtx.XAddressId, reqCtx.Address)
 	}
 }

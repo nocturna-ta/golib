@@ -127,8 +127,8 @@ func (p *Publisher) addRequestContextMetadata(ctx context.Context, metadata map[
 		metadata[libCtx.XChannelId] = reqCtx.ChannelId
 	}
 
-	if reqCtx.AccountId != "" {
-		metadata[libCtx.XAccountId] = reqCtx.AccountId
+	if reqCtx.Address != "" {
+		metadata[libCtx.XAddressId] = reqCtx.Address
 	}
 
 	return metadata, nil

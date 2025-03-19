@@ -56,7 +56,7 @@ func RequestContextClientInterceptor() grpc.UnaryClientInterceptor {
 }
 
 func readMetadataToRequestContext(md metadata.MD) libCtx.RequestContext {
-	var userId, requestId, channelId, accountId string
+	var userId, requestId, channelId, addressId string
 
 	userId = md.Get(libCtx.XUserId)[0]
 	requestId = md.Get(libCtx.XRequestId)[0]
@@ -65,13 +65,12 @@ func readMetadataToRequestContext(md metadata.MD) libCtx.RequestContext {
 	}
 
 	channelId = md.Get(libCtx.XChannelId)[0]
-	accountId = md.Get(libCtx.XAccountId)[0]
-
+	addressId = md.Get(libCtx.XAddressId)[0]
 	return libCtx.RequestContext{
 		UserId:    userId,
 		RequestId: requestId,
 		ChannelId: channelId,
-		AccountId: accountId,
+		Address:   addressId,
 	}
 }
 
@@ -81,7 +80,7 @@ func buildMetadataFromReqCtx(reqCtx *libCtx.RequestContext) metadata.MD {
 	newMD.Set(libCtx.XUserId, reqCtx.UserId)
 	newMD.Set(libCtx.XRequestId, reqCtx.RequestId)
 	newMD.Set(libCtx.XChannelId, reqCtx.ChannelId)
-	newMD.Set(libCtx.XAccountId, reqCtx.AccountId)
+	newMD.Set(libCtx.XAddressId, reqCtx.Address)
 
 	return newMD
 }
