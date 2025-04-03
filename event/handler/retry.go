@@ -300,9 +300,9 @@ func (er *EventRetry) newContextFromMetadata(ctx context.Context, metadata map[s
 		}
 	}
 
-	if val, ok := metadata[libCtx.XAccountId]; ok {
+	if val, ok := metadata[libCtx.XAddressId]; ok {
 		if valStr, ok := val.(string); ok {
-			reqCtx.AccountId = valStr
+			reqCtx.Address = valStr
 		}
 	}
 
