@@ -156,7 +156,7 @@ func (e *ethClient) SendTransaction(ctx context.Context, tx *types.Transaction) 
 }
 
 // EstimateGas estimates the gas needed to execute a call
-func (e *ethClient) EstimateGas(ctx context.Context, call CallMsg) (uint64, error) {
+func (e *ethClient) EstimateGas(ctx context.Context, call ethereum.CallMsg) (uint64, error) {
 	span, ctx := tracing.StartSpanFromContext(ctx, "EthClient.EstimateGas")
 	defer span.End()
 

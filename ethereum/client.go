@@ -24,20 +24,10 @@ type Client interface {
 
 	// Transaction methods
 	SendTransaction(ctx context.Context, tx *types.Transaction) error
-	EstimateGas(ctx context.Context, call CallMsg) (uint64, error)
+	EstimateGas(ctx context.Context, call ethereum.CallMsg) (uint64, error)
 	SuggestGasPrice(ctx context.Context) (*big.Int, error)
 
 	// Contract interactions
 	GetCallOpts(ctx context.Context) *bind.CallOpts
 	GetTransactOpts(ctx context.Context, privateKey string) (*bind.TransactOpts, error)
-}
-
-// CallMsg contains parameters for contract calls
-type CallMsg struct {
-	From     common.Address  // Sender address
-	To       *common.Address // Recipient address (nil for contract creation)
-	Gas      uint64          // Gas provided for the call
-	GasPrice *big.Int        // Gas price provided for the call
-	Value    *big.Int        // Amount of wei sent in the call
-	Data     []byte          // Input data for the call
 }

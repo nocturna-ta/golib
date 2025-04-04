@@ -12,8 +12,6 @@ import (
 
 	ethclient "github.com/ethereum/go-ethereum/ethclient"
 
-	ethereum "command-line-arguments"
-
 	go_ethereum "github.com/ethereum/go-ethereum"
 
 	mock "github.com/stretchr/testify/mock"
@@ -45,7 +43,7 @@ func (_m *Client) Close() error {
 }
 
 // EstimateGas provides a mock function with given fields: ctx, call
-func (_m *Client) EstimateGas(ctx context.Context, call ethereum.CallMsg) (uint64, error) {
+func (_m *Client) EstimateGas(ctx context.Context, call go_ethereum.CallMsg) (uint64, error) {
 	ret := _m.Called(ctx, call)
 
 	if len(ret) == 0 {
@@ -54,16 +52,16 @@ func (_m *Client) EstimateGas(ctx context.Context, call ethereum.CallMsg) (uint6
 
 	var r0 uint64
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, ethereum.CallMsg) (uint64, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, go_ethereum.CallMsg) (uint64, error)); ok {
 		return rf(ctx, call)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, ethereum.CallMsg) uint64); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, go_ethereum.CallMsg) uint64); ok {
 		r0 = rf(ctx, call)
 	} else {
 		r0 = ret.Get(0).(uint64)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, ethereum.CallMsg) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, go_ethereum.CallMsg) error); ok {
 		r1 = rf(ctx, call)
 	} else {
 		r1 = ret.Error(1)
