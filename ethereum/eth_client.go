@@ -115,7 +115,7 @@ func (e *ethClient) GetBlockByNumber(ctx context.Context, number *big.Int) (*typ
 }
 
 // GetLogs returns the logs for the given filter query
-func (e *ethClient) GetLogs(ctx context.Context, query FilterQuery) ([]types.Log, error) {
+func (e *ethClient) GetLogs(ctx context.Context, query ethereum.FilterQuery) ([]types.Log, error) {
 	span, ctx := tracing.StartSpanFromContext(ctx, "EthClient.GetLogs")
 	defer span.End()
 

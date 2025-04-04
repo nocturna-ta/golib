@@ -2,6 +2,7 @@ package ethereum
 
 import (
 	"context"
+	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -19,7 +20,7 @@ type Client interface {
 	GetBalance(ctx context.Context, address common.Address) (*big.Int, error)
 	GetTransactionByHash(ctx context.Context, hash common.Hash) (*types.Transaction, bool, error)
 	GetBlockByNumber(ctx context.Context, number *big.Int) (*types.Block, error)
-	GetLogs(ctx context.Context, query FilterQuery) ([]types.Log, error)
+	GetLogs(ctx context.Context, query ethereum.FilterQuery) ([]types.Log, error)
 
 	// Transaction methods
 	SendTransaction(ctx context.Context, tx *types.Transaction) error
@@ -29,13 +30,6 @@ type Client interface {
 	// Contract interactions
 	GetCallOpts(ctx context.Context) *bind.CallOpts
 	GetTransactOpts(ctx context.Context, privateKey string) (*bind.TransactOpts, error)
-}
-
-type FilterQuery struct {
-	FromBlock *big.Int         // Beginning of the queried range, nil means genesis block
-	ToBlock   *big.Int         // End of the range, nil means latest block
-	Addresses []common.Address // Restricts matches to events created by specific contracts
-	Topics    [][]common.Hash  // Restricts matches to particular event topics
 }
 
 // CallMsg contains parameters for contract calls
