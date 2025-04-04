@@ -12,7 +12,9 @@ import (
 
 	ethclient "github.com/ethereum/go-ethereum/ethclient"
 
-	ethereum "github.com/ethereum/go-ethereum"
+	ethereum "command-line-arguments"
+
+	go_ethereum "github.com/ethereum/go-ethereum"
 
 	mock "github.com/stretchr/testify/mock"
 
@@ -201,7 +203,7 @@ func (_m *Client) GetLatestBlockNumber(ctx context.Context) (*big.Int, error) {
 }
 
 // GetLogs provides a mock function with given fields: ctx, query
-func (_m *Client) GetLogs(ctx context.Context, query ethereum.FilterQuery) ([]types.Log, error) {
+func (_m *Client) GetLogs(ctx context.Context, query go_ethereum.FilterQuery) ([]types.Log, error) {
 	ret := _m.Called(ctx, query)
 
 	if len(ret) == 0 {
@@ -210,10 +212,10 @@ func (_m *Client) GetLogs(ctx context.Context, query ethereum.FilterQuery) ([]ty
 
 	var r0 []types.Log
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, ethereum.FilterQuery) ([]types.Log, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, go_ethereum.FilterQuery) ([]types.Log, error)); ok {
 		return rf(ctx, query)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, ethereum.FilterQuery) []types.Log); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, go_ethereum.FilterQuery) []types.Log); ok {
 		r0 = rf(ctx, query)
 	} else {
 		if ret.Get(0) != nil {
@@ -221,7 +223,7 @@ func (_m *Client) GetLogs(ctx context.Context, query ethereum.FilterQuery) ([]ty
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, ethereum.FilterQuery) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, go_ethereum.FilterQuery) error); ok {
 		r1 = rf(ctx, query)
 	} else {
 		r1 = ret.Error(1)
