@@ -14,6 +14,7 @@ const (
 	XChannelId            = "X-Channel-Id"
 	XRequestId            = "X-Request-Id"
 	XAddressId            = "X-Address-Id"
+	XRole                 = "X-Role"
 )
 
 var (
@@ -29,6 +30,7 @@ type RequestContext struct {
 	RequestId string `json:"request-id,omitempty"`
 	ChannelId string `json:"channel-id,omitempty"`
 	Address   string `json:"address-id,omitempty"`
+	Role      string `json:"role,omitempty"`
 }
 
 func ReadRequestId(ctx context.Context) string {
@@ -72,5 +74,10 @@ func (rc *RequestContext) GetUserId() uuid.UUID {
 
 func (rc *RequestContext) GetAddress() string {
 	res := rc.Address
+	return res
+}
+
+func (rc *RequestContext) GetRole() string {
+	res := rc.Role
 	return res
 }

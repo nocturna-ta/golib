@@ -9,6 +9,7 @@ var (
 type option struct {
 	mustAuthorized bool
 	requestTimeout *time.Duration
+	allowedRoles   []string
 }
 
 type Option interface {
@@ -26,6 +27,13 @@ func (of OptionFn) Apply(opt *option) {
 func MustAuthorized(val bool) OptionFn {
 	return func(opt *option) {
 		opt.mustAuthorized = val
+	}
+}
+
+func WithRoles(roles ...string) OptionFn {
+	return func(opt *option) {
+		opt.mustAuthorized = true
+		opt.allowedRoles = roles
 	}
 }
 
@@ -52,4 +60,12 @@ func isUsedSpecificTimeout(opts ...Option) (bool, *time.Duration) {
 		op.Apply(opt)
 	}
 	return opt.requestTimeout != nil, opt.requestTimeout
+}
+
+func getRolesFromOptions(opts ...Option) ([]string, bool) {
+	opt := &option{}
+	for _, op := range opts {
+		op.Apply(opt)
+	}
+	return opt.allowedRoles, len(opt.allowedRoles) > 0
 }

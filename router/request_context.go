@@ -10,7 +10,7 @@ import (
 // requestContextHandler trying to get RequestContext from request header and save it in current context
 // RequestContext value might be empty if there is no header found (can be from public call)
 func requestContextHandler(c *fiber.Ctx) error {
-	var userId, requestId, channelId string
+	var userId, requestId, addressId, channelId, role string
 
 	userId = string(c.Request().Header.Peek(libCtx.XUserId))
 
@@ -21,13 +21,15 @@ func requestContextHandler(c *fiber.Ctx) error {
 
 	channelId = string(c.Request().Header.Peek(libCtx.XChannelId))
 
-	addressId := string(c.Request().Header.Peek(libCtx.XAddressId))
+	addressId = string(c.Request().Header.Peek(libCtx.XAddressId))
+	role = string(c.Request().Header.Peek(libCtx.XRole))
 
 	reqCtx := libCtx.RequestContext{
 		UserId:    userId,
 		RequestId: requestId,
 		ChannelId: channelId,
 		Address:   addressId,
+		Role:      role,
 	}
 
 	ctx := c.UserContext()
@@ -55,4 +57,28 @@ func validateRequestContext(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func validateRequestContextWithRoles(ctx context.Context, allowedRoles []string) error {
+	err := validateRequestContext(ctx)
+	if err != nil {
+		return err
+	}
+
+	reqCtx, err := libCtx.GetRequestContext(ctx)
+	if err != nil {
+		return errUnauthorized
+	}
+
+	if len(allowedRoles) == 0 {
+		return nil
+	}
+
+	for _, role := range allowedRoles {
+		if reqCtx.Role == role {
+			return nil
+		}
+	}
+
+	return errForbiddenRole
 }

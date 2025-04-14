@@ -211,8 +211,17 @@ func handle[T rest.Response](method, path string, handler Handler[T], jr *FastRo
 		defOpts = append(defOpts, opts...)
 
 		if valid := isMustAuthorized(defOpts...); valid {
-			if err := validateRequestContext(ctx.UserContext()); err != nil {
-				return err
+
+			roles, hasRoles := getRolesFromOptions(defOpts...)
+			var authErr error
+			if hasRoles {
+				authErr = validateRequestContextWithRoles(ctx.UserContext(), roles)
+			} else {
+				authErr = validateRequestContext(ctx.UserContext())
+			}
+
+			if authErr != nil {
+				return authErr
 			}
 		}
 

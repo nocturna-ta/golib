@@ -12,4 +12,10 @@ var (
 		Code:    http.StatusUnauthorized,
 		Type:    response.ErrUnauthorized,
 	}
+
+	errForbiddenRole = &custerr.ErrChain{
+		Message: "forbidden role",
+		Code:    http.StatusForbidden,
+		Type:    response.ErrForbiddenResource,
+	}
 )
