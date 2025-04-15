@@ -81,3 +81,20 @@ func (rc *RequestContext) GetRole() string {
 	res := rc.Role
 	return res
 }
+
+func (rc *RequestContext) HasRole(role string) bool {
+	return rc.Role == role
+}
+
+func (rc *RequestContext) HasAnyRole(roles ...string) bool {
+	if rc.Role == "" {
+		return false
+	}
+
+	for _, r := range roles {
+		if rc.Role == r {
+			return true
+		}
+	}
+	return false
+}

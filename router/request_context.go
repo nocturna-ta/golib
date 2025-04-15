@@ -74,11 +74,9 @@ func validateRequestContextWithRoles(ctx context.Context, allowedRoles []string)
 		return nil
 	}
 
-	for _, role := range allowedRoles {
-		if reqCtx.Role == role {
-			return nil
-		}
+	if !reqCtx.HasAnyRole(allowedRoles...) {
+		return errForbiddenRole
 	}
 
-	return errForbiddenRole
+	return nil
 }
