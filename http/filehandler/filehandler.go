@@ -1,15 +1,15 @@
-package http
+package filehandler
 
 import (
 	"context"
 	"errors"
 	"fmt"
 	"github.com/nocturna-ta/golib/fileutils"
+	"github.com/nocturna-ta/golib/http"
 	"github.com/nocturna-ta/golib/log"
 	"github.com/nocturna-ta/golib/tracing"
 	"io"
 	"mime/multipart"
-	"net/http"
 	"strings"
 )
 
@@ -161,8 +161,8 @@ func PrepareAttachmentResponse(ctx context.Context, filePath string) (*http.Resp
 	}
 
 	// Set proper response headers
-	response.Header.Add("Content-Type", contentType)
-	response.Header.Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", file))
+	response.ResponseHeader.Add("Content-Type", contentType)
+	response.ResponseHeader.Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", file.FileName))
 
 	return response, nil
 }
