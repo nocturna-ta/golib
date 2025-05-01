@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/nocturna-ta/golib/context"
 	"github.com/nocturna-ta/golib/custerr"
+	http2 "github.com/nocturna-ta/golib/http"
 	"github.com/nocturna-ta/golib/log"
 	"github.com/nocturna-ta/golib/response"
 
@@ -181,7 +182,12 @@ func (ar AttachmentResponse) Send(c *fiber.Ctx) error {
 		c.Response().Header.Add("Content-Type", "application/octet-stream")
 	}
 
-	c.Response().Header.Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", ar.FileName))
+	file, ok := ar.File.(*http2.File)
+	if ok && file.DisplayMode == "inline" {
+		c.Response().Header.Add("Content-Disposition", fmt.Sprintf("inline; filename=\"%s\"", ar.FileName))
+	} else {
+		c.Response().Header.Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", ar.FileName))
+	}
 
 	if _, err := io.Copy(c.Response().BodyWriter(), ar.File); err != nil {
 		return err

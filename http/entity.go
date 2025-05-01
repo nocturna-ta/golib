@@ -43,7 +43,8 @@ type RetryConfig struct {
 
 type File struct {
 	io.Reader
-	FileName string
+	FileName    string
+	DisplayMode string
 }
 
 // Parameter is used to provide URL Parameters to nethttp client request

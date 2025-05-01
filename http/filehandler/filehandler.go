@@ -26,6 +26,13 @@ type UploadOptions struct {
 	Validator  func(fileHeader *multipart.FileHeader) error
 }
 
+type FileDisplayMode string
+
+const (
+	DisplayModeInline     FileDisplayMode = "inline"
+	DisplayModeAttachment FileDisplayMode = "attachment"
+)
+
 func DefaultUploadOptions() *UploadOptions {
 	return &UploadOptions{
 		FileConfig: fileutils.DefaultConfig(),
@@ -123,7 +130,7 @@ func UploadFile(ctx context.Context, form *multipart.Form, options *UploadOption
 	}, nil
 }
 
-func GetFileFromPath(ctx context.Context, filePath string) (*http.File, string, error) {
+func GetFileFromPath(ctx context.Context, filePath string, displayMode FileDisplayMode) (*http.File, string, error) {
 	span, ctx := tracing.StartSpanFromContext(ctx, "FileHandler.GetFileFromPath")
 	defer span.End()
 
@@ -140,16 +147,25 @@ func GetFileFromPath(ctx context.Context, filePath string) (*http.File, string, 
 	contentType := fileutils.GetContentType(filename)
 
 	return &http.File{
-		Reader:   file,
-		FileName: filename,
+		Reader:      file,
+		FileName:    filename,
+		DisplayMode: string(displayMode),
 	}, contentType, nil
 }
 
-func PrepareAttachmentResponse(ctx context.Context, filePath string) (*http.Response[any], error) {
+func DetectDisplayMode(contentType string) FileDisplayMode {
+	if strings.HasPrefix(contentType, "image/") {
+		return DisplayModeInline
+	}
+
+	return DisplayModeAttachment
+}
+
+func PrepareAttachmentResponse(ctx context.Context, filePath string, displayMode FileDisplayMode) (*http.Response[any], error) {
 	span, ctx := tracing.StartSpanFromContext(ctx, "FileHandler.PrepareAttachmentResponse")
 	defer span.End()
 
-	file, contentType, err := GetFileFromPath(ctx, filePath)
+	file, contentType, err := GetFileFromPath(ctx, filePath, displayMode)
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +178,14 @@ func PrepareAttachmentResponse(ctx context.Context, filePath string) (*http.Resp
 
 	// Set proper response headers
 	response.ResponseHeader.Add("Content-Type", contentType)
-	response.ResponseHeader.Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", file.FileName))
+	contentDisposition := string(displayMode)
+	if displayMode == DisplayModeAttachment {
+		contentDisposition = fmt.Sprintf("attachment; filename=\"%s\"", file.FileName)
+	} else {
+		contentDisposition = fmt.Sprintf("inline; filename=\"%s\"", file.FileName)
+	}
+
+	response.ResponseHeader.Add("Content-Disposition", contentDisposition)
 
 	return response, nil
 }
