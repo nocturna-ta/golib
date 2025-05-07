@@ -139,7 +139,7 @@ func (e *ethClient) GetLogs(ctx context.Context, query ethereum.FilterQuery) ([]
 }
 
 // SendTransaction sends a transaction
-func (e *ethClient) SendTransaction(ctx context.Context, tx *types.Transaction) error {
+func (e *ethClient) SendTransaction(ctx context.Context, tx *types.Transaction) (string, error) {
 	span, ctx := tracing.StartSpanFromContext(ctx, "EthClient.SendTransaction")
 	defer span.End()
 
@@ -149,10 +149,10 @@ func (e *ethClient) SendTransaction(ctx context.Context, tx *types.Transaction) 
 			"error": err,
 			"tx":    tx.Hash().Hex(),
 		}).ErrorWithCtx(ctx, "[EthClient.SendTransaction] Failed to send transaction")
-		return err
+		return "", err
 	}
 
-	return nil
+	return tx.Hash().Hex(), nil
 }
 
 // EstimateGas estimates the gas needed to execute a call

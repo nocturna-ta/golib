@@ -23,7 +23,7 @@ type Client interface {
 	GetLogs(ctx context.Context, query ethereum.FilterQuery) ([]types.Log, error)
 
 	// Transaction methods
-	SendTransaction(ctx context.Context, tx *types.Transaction) error
+	SendTransaction(ctx context.Context, tx *types.Transaction) (string, error)
 	EstimateGas(ctx context.Context, call ethereum.CallMsg) (uint64, error)
 	SuggestGasPrice(ctx context.Context) (*big.Int, error)
 
