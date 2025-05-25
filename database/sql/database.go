@@ -2,6 +2,7 @@ package sql
 
 import (
 	"fmt"
+	_ "github.com/ClickHouse/clickhouse-go/v2"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -12,8 +13,9 @@ import (
 type DBDriver string
 
 const (
-	DriverMySQL    DBDriver = "mysql"
-	DriverPostgres DBDriver = "postgres"
+	DriverMySQL      DBDriver = "mysql"
+	DriverPostgres   DBDriver = "postgres"
+	DriverClickHouse DBDriver = "clickhouse"
 )
 
 type (
@@ -24,6 +26,9 @@ type (
 		MaxIdleConn     int    `json:"max_idle" mapstructure:"max_idle"`
 		MaxConn         int    `json:"max_con" mapstructure:"max_con"`
 		ConnMaxLifetime string `json:"conn_max_lifetime" mapstructure:"conn_max_lifetime"`
+		// ClickHouse specific settings
+		Debug           bool   `json:"debug" mapstructure:"debug"`
+		CompressionType string `json:"compression_type" mapstructure:"compression_type"`
 	}
 
 	DB struct {
