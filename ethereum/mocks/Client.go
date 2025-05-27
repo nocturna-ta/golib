@@ -298,21 +298,31 @@ func (_m *Client) GetTransactionByHash(ctx context.Context, hash common.Hash) (*
 }
 
 // SendTransaction provides a mock function with given fields: ctx, tx
-func (_m *Client) SendTransaction(ctx context.Context, tx *types.Transaction) error {
+func (_m *Client) SendTransaction(ctx context.Context, tx *types.Transaction) (string, error) {
 	ret := _m.Called(ctx, tx)
 
 	if len(ret) == 0 {
 		panic("no return value specified for SendTransaction")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *types.Transaction) error); ok {
+	var r0 string
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *types.Transaction) (string, error)); ok {
+		return rf(ctx, tx)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, *types.Transaction) string); ok {
 		r0 = rf(ctx, tx)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(string)
 	}
 
-	return r0
+	if rf, ok := ret.Get(1).(func(context.Context, *types.Transaction) error); ok {
+		r1 = rf(ctx, tx)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // SuggestGasPrice provides a mock function with given fields: ctx
