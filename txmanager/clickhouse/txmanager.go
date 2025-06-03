@@ -7,6 +7,7 @@ import (
 	"github.com/nocturna-ta/golib/database/nosql/clickhouse"
 	"github.com/nocturna-ta/golib/log"
 	"github.com/nocturna-ta/golib/txmanager"
+	"github.com/nocturna-ta/golib/txmanager/utils"
 )
 
 func init() {
@@ -15,11 +16,11 @@ func init() {
 
 type (
 	manager struct {
-		client clickhouse.Client
+		store *clickhouse.Store
 	}
 
 	Config struct {
-		Client clickhouse.Client
+		Store *clickhouse.Store
 	}
 )
 
@@ -29,14 +30,17 @@ func NewTxManager(_ context.Context, config any) (txmanager.TxManager, error) {
 		return nil, fmt.Errorf("failed to decode config")
 	}
 
-	if cfg.Client == nil {
-		return nil, fmt.Errorf("clickhouse client is required")
+	if cfg.Store == nil {
+		return nil, fmt.Errorf("clickhouse store is required")
 	}
 
-	return &manager{client: cfg.Client}, nil
+	return &manager{store: cfg.Store}, nil
 }
 
 func (m *manager) Execute(ctx context.Context, fn txmanager.TxFn, opts any) (result any, err error) {
+
+	batchManager := clickhouse.NewBatchManager(m.store.GetMaster())
+	batchCtx := utils.SetClickHouseBatch(ctx, batchManager)
 
 	defer func() {
 		if p := recover(); p != nil {
@@ -47,7 +51,7 @@ func (m *manager) Execute(ctx context.Context, fn txmanager.TxFn, opts any) (res
 		}
 	}()
 
-	result, err = fn(ctx)
+	result, err = fn(batchCtx)
 
 	return result, err
 }

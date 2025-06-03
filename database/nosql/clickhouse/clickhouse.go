@@ -22,6 +22,60 @@ type Client interface {
 	Get(ctx context.Context, dest any, query string, args ...any) error
 	AsyncInsert(ctx context.Context, query string, wait bool, args ...any) error
 	PrepareBatch(ctx context.Context, query string) (*Batch, error)
+	GetServerInfo(ctx context.Context) (*ServerInfo, error)
+	Stats() driver.Stats
+}
+
+type Store struct {
+	Master Client
+	Slave  Client
+}
+
+type StoreConfig struct {
+	Master Config `json:"master" mapstructure:"master"`
+	Slave  Config `json:"slave" mapstructure:"slave"`
+}
+
+func NewStore(cfg *StoreConfig) (*Store, error) {
+	master, err := New(&cfg.Master)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create master client: %w", err)
+	}
+
+	slave, err := New(&cfg.Slave)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create slave client: %w", err)
+	}
+
+	return &Store{
+		Master: master,
+		Slave:  slave,
+	}, nil
+}
+
+func (s *Store) GetMaster() Client {
+	return s.Master
+}
+
+func (s *Store) GetSlave() Client {
+	return s.Slave
+}
+
+func (s *Store) Close() error {
+	var masterErr, slaveErr error
+
+	if s.Master != nil {
+		masterErr = s.Master.Close()
+	}
+	if s.Slave != nil {
+		slaveErr = s.Slave.Close()
+	}
+
+	if masterErr != nil {
+		return masterErr
+	}
+
+	return slaveErr
 }
 
 type client struct {
@@ -354,4 +408,35 @@ func (c *client) Stats() driver.Stats {
 		return c.conn.Stats()
 	}
 	return driver.Stats{}
+}
+
+type BatchManager struct {
+	client Client
+}
+
+func NewBatchManager(client Client) *BatchManager {
+	return &BatchManager{client: client}
+}
+
+func (bm *BatchManager) ExecuteBatch(ctx context.Context, query string, fn func(batch *Batch) error) error {
+	batch, err := bm.client.PrepareBatch(ctx, query)
+	if err != nil {
+		return fmt.Errorf("failed to prepare batch: %w", err)
+	}
+
+	if err := fn(batch); err != nil {
+		if abortErr := batch.Abort(); abortErr != nil {
+			log.WithFields(log.Fields{
+				"error":       err,
+				"abort_error": abortErr,
+			}).ErrorWithCtx(ctx, "Failed to abort batch after error")
+		}
+		return err
+	}
+
+	if err := batch.Send(); err != nil {
+		return fmt.Errorf("failed to send batch: %w", err)
+	}
+
+	return nil
 }
