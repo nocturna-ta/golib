@@ -86,38 +86,38 @@ type client struct {
 }
 
 type Config struct {
-	Addrs              []string           `json:"addrs" mapstructure:"addrs"`
-	Auth               Auth               `json:"auth" mapstructure:"auth"`
-	Database           string             `json:"database" mapstructure:"database"`
-	DialTimeout        time.Duration      `json:"dial_timeout" mapstructure:"dial_timeout"`
-	MaxOpenConns       int                `json:"max_open_conns" mapstructure:"max_open_conns"`
-	MaxIdleConns       int                `json:"max_idle_conns" mapstructure:"max_idle_conns"`
-	ConnMaxLifetime    time.Duration      `json:"conn_max_lifetime" mapstructure:"conn_max_lifetime"`
-	TLS                *TLSConfig         `json:"tls" mapstructure:"tls"`
-	BlockBufferSize    uint8              `json:"block_buffer_size" mapstructure:"block_buffer_size"`
-	MaxCompressionSize uint64             `json:"max_compression_size" mapstructure:"max_compression_size"`
-	AsyncInsert        bool               `json:"async_insert" mapstructure:"async_insert"`
-	AsyncInsertOptions AsyncInsertOptions `json:"async_insert_options" mapstructure:"async_insert_options"`
-	Debug              bool               `json:"debug" mapstructure:"debug"`
+	Addrs              []string           `json:"addrs" mapstructure:"addrs" yaml:"Addrs"`
+	Auth               Auth               `json:"auth" mapstructure:"auth" yaml:"Auth"`
+	Database           string             `json:"database" mapstructure:"database" yaml:"Database"`
+	DialTimeout        time.Duration      `json:"dial_timeout" mapstructure:"dial_timeout" yaml:"DialTimeout"`
+	MaxOpenConns       int                `json:"max_open_conns" mapstructure:"max_open_conns" yaml:"MaxOpenConns"`
+	MaxIdleConns       int                `json:"max_idle_conns" mapstructure:"max_idle_conns" yaml:"MaxIdleConns"`
+	ConnMaxLifetime    time.Duration      `json:"conn_max_lifetime" mapstructure:"conn_max_lifetime" yaml:"ConnMaxLifetime"`
+	TLS                *TLSConfig         `json:"tls" mapstructure:"tls" yaml:"TLS"`
+	BlockBufferSize    uint8              `json:"block_buffer_size" mapstructure:"block_buffer_size" yaml:"BlockBufferSize"`
+	MaxCompressionSize uint64             `json:"max_compression_size" mapstructure:"max_compression_size" yaml:"MaxCompressionSize"`
+	AsyncInsert        bool               `json:"async_insert" mapstructure:"async_insert" yaml:"AsyncInsert"`
+	AsyncInsertOptions AsyncInsertOptions `json:"async_insert_options" mapstructure:"async_insert_options" yaml:"AsyncInsertOptions"`
+	Debug              bool               `json:"debug" mapstructure:"debug" yaml:"Debug"`
 }
 
 type Auth struct {
-	Database string `json:"database" mapstructure:"database"`
-	Username string `json:"username" mapstructure:"username"`
-	Password string `json:"password" mapstructure:"password"`
+	Database string `json:"database" mapstructure:"database" yaml:"Database"`
+	Username string `json:"username" mapstructure:"username" yaml:"Username"`
+	Password string `json:"password" mapstructure:"password" yaml:"Password"`
 }
 
 type TLSConfig struct {
-	Enable             bool   `json:"enable" mapstructure:"enable"`
-	InsecureSkipVerify bool   `json:"insecure_skip_verify" mapstructure:"insecure_skip_verify"`
-	CertFile           string `json:"cert_file" mapstructure:"cert_file"`
-	KeyFile            string `json:"key_file" mapstructure:"key_file"`
-	CAFile             string `json:"ca_file" mapstructure:"ca_file"`
+	Enable             bool   `json:"enable" mapstructure:"enable" yaml:"Enable"`
+	InsecureSkipVerify bool   `json:"insecure_skip_verify" mapstructure:"insecure_skip_verify" yaml:"InsecureSkipVerify"`
+	CertFile           string `json:"cert_file" mapstructure:"cert_file" yaml:"CertFile"`
+	KeyFile            string `json:"key_file" mapstructure:"key_file" yaml:"KeyFile"`
+	CAFile             string `json:"ca_file" mapstructure:"ca_file" yaml:"CAFile"`
 }
 
 type AsyncInsertOptions struct {
-	MaxBatchSize int           `json:"max_batch_size" mapstructure:"max_batch_size"`
-	MaxDelay     time.Duration `json:"max_delay" mapstructure:"max_delay"`
+	MaxBatchSize int           `json:"max_batch_size" mapstructure:"max_batch_size" yaml:"MaxBatchSize"`
+	MaxDelay     time.Duration `json:"max_delay" mapstructure:"max_delay" yaml:"MaxDelay"`
 }
 
 func New(cfg *Config) (Client, error) {
