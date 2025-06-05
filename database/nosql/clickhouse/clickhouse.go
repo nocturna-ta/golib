@@ -134,15 +134,11 @@ func (c *client) connect() error {
 		options.Settings["wait_for_async_insert"] = 1
 	}
 
-	if c.cfg.MaxOpenConns > 0 {
-		c.db.SetMaxOpenConns(c.cfg.MaxOpenConns)
-	}
-	if c.cfg.MaxIdleConns > 0 {
-		c.db.SetMaxIdleConns(c.cfg.MaxIdleConns)
-	}
-	if c.cfg.ConnMaxLifetime > 0 {
-		c.db.SetConnMaxLifetime(c.cfg.ConnMaxLifetime)
-	}
+	c.db.SetMaxOpenConns(10)
+
+	c.db.SetMaxIdleConns(10)
+
+	c.db.SetConnMaxLifetime(10)
 
 	conn, err := clickhouse.Open(options)
 	if err != nil {
