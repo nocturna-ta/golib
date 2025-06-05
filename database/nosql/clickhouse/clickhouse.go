@@ -3,6 +3,7 @@ package clickhouse
 import (
 	"context"
 	"crypto/tls"
+	_ "database/sql"
 	"fmt"
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
@@ -24,6 +25,58 @@ type Client interface {
 	PrepareBatch(ctx context.Context, query string) (*Batch, error)
 	GetServerInfo(ctx context.Context) (*ServerInfo, error)
 	Stats() driver.Stats
+}
+
+type Store struct {
+	Master Client
+	Slave  Client
+}
+
+type StoreConfig struct {
+	Master Config `json:"master" mapstructure:"master"`
+	Slave  Config `json:"slave" mapstructure:"slave"`
+}
+
+func NewStore(cfg *StoreConfig) (*Store, error) {
+	master, err := New(&cfg.Master)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create master client: %w", err)
+	}
+
+	slave, err := New(&cfg.Slave)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create slave client: %w", err)
+	}
+
+	return &Store{
+		Master: master,
+		Slave:  slave,
+	}, nil
+}
+
+func (s *Store) GetMaster() Client {
+	return s.Master
+}
+
+func (s *Store) GetSlave() Client {
+	return s.Slave
+}
+
+func (s *Store) Close() error {
+	var masterErr, slaveErr error
+
+	if s.Master != nil {
+		masterErr = s.Master.Close()
+	}
+	if s.Slave != nil {
+		slaveErr = s.Slave.Close()
+	}
+
+	if masterErr != nil {
+		return masterErr
+	}
+
+	return slaveErr
 }
 
 type client struct {
@@ -88,6 +141,7 @@ func NewFromDSN(dsn string) (Client, error) {
 		return nil, fmt.Errorf("failed to open clickhouse connection: %w", err)
 	}
 
+	// IMPORTANT: Set connection pool settings immediately after opening
 	db.SetMaxOpenConns(10)
 	db.SetMaxIdleConns(5)
 	db.SetConnMaxLifetime(time.Hour)
@@ -107,20 +161,22 @@ func NewFromDSN(dsn string) (Client, error) {
 }
 
 func (c *client) connect() error {
-
+	// Set default values if not provided - ENSURE THEY ARE ALWAYS > 0
 	if c.cfg.MaxOpenConns <= 0 {
-		c.cfg.MaxOpenConns = 10
+		c.cfg.MaxOpenConns = 25 // Increased default
 	}
 	if c.cfg.MaxIdleConns <= 0 {
-		c.cfg.MaxIdleConns = 5
+		c.cfg.MaxIdleConns = 25 // Increased default
 	}
 	if c.cfg.ConnMaxLifetime <= 0 {
-		c.cfg.ConnMaxLifetime = time.Hour
+		c.cfg.ConnMaxLifetime = 5 * time.Minute // Shorter default
 	}
 	if c.cfg.DialTimeout <= 0 {
 		c.cfg.DialTimeout = 10 * time.Second
 	}
 
+	// CRITICAL: ClickHouse driver validates these settings, so they must be set correctly
+	// in the options struct BEFORE calling OpenDB
 	options := &clickhouse.Options{
 		Addr: c.cfg.Addrs,
 		Auth: clickhouse.Auth{
@@ -130,7 +186,9 @@ func (c *client) connect() error {
 		},
 		Debug: c.cfg.Debug,
 		Debugf: func(format string, v ...any) {
-			log.Debugf("[ClickHouse]"+format, v...)
+			if c.cfg.Debug {
+				log.Debugf("[ClickHouse] "+format, v...)
+			}
 		},
 		Settings: clickhouse.Settings{
 			"max_execution_time": 60,
@@ -138,6 +196,7 @@ func (c *client) connect() error {
 		Compression: &clickhouse.Compression{
 			Method: clickhouse.CompressionLZ4,
 		},
+		// CRITICAL: These must be set in options for the driver to accept them
 		DialTimeout:     c.cfg.DialTimeout,
 		MaxOpenConns:    c.cfg.MaxOpenConns,
 		MaxIdleConns:    c.cfg.MaxIdleConns,
@@ -157,28 +216,50 @@ func (c *client) connect() error {
 		options.Settings["wait_for_async_insert"] = 1
 	}
 
+	// Log the connection settings for debugging
+	log.WithFields(log.Fields{
+		"addrs":             options.Addr,
+		"database":          options.Auth.Database,
+		"username":          options.Auth.Username,
+		"max_open_conns":    options.MaxOpenConns,
+		"max_idle_conns":    options.MaxIdleConns,
+		"conn_max_lifetime": options.ConnMaxLifetime,
+		"dial_timeout":      options.DialTimeout,
+	}).Info("[ClickHouse] Attempting connection with settings")
+
+	// Create native connection first
 	conn, err := clickhouse.Open(options)
 	if err != nil {
-		return fmt.Errorf("failed to open clickhouse connection: %w", err)
+		return fmt.Errorf("failed to open clickhouse native connection: %w", err)
 	}
 
 	if err := conn.Ping(context.Background()); err != nil {
-		return fmt.Errorf("failed to ping clickhouse: %w", err)
+		return fmt.Errorf("failed to ping clickhouse native connection: %w", err)
 	}
 
 	c.conn = conn
 
+	// Create SQL database using the same options
+	// The ClickHouse driver will automatically apply the connection pool settings
 	sqlDB := clickhouse.OpenDB(options)
 
-	sqlDB.SetMaxOpenConns(c.cfg.MaxOpenConns)
-	sqlDB.SetMaxIdleConns(c.cfg.MaxIdleConns)
-	sqlDB.SetConnMaxLifetime(c.cfg.ConnMaxLifetime)
-
+	// Test the SQL connection - this should now work because the driver
+	// has properly configured the connection pool from the options
 	if err := sqlDB.Ping(); err != nil {
 		return fmt.Errorf("failed to ping clickhouse SQL DB: %w", err)
 	}
 
+	// Create sqlx wrapper
 	c.db = sqlx.NewDb(sqlDB, "clickhouse")
+
+	// Verify the connection pool settings were applied by testing a query
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var testResult int
+	if err := c.db.GetContext(ctx, &testResult, "SELECT 1"); err != nil {
+		return fmt.Errorf("failed to execute test query: %w", err)
+	}
 
 	log.WithFields(log.Fields{
 		"max_open_conns":    c.cfg.MaxOpenConns,
@@ -186,7 +267,9 @@ func (c *client) connect() error {
 		"conn_max_lifetime": c.cfg.ConnMaxLifetime,
 		"addrs":             c.cfg.Addrs,
 		"database":          c.cfg.Auth.Database,
-	}).Info("ClickHouse client connected successfully")
+		"test_query_result": testResult,
+	}).Info("[ClickHouse] Connection established and tested successfully")
+
 	return nil
 }
 
@@ -224,46 +307,57 @@ func (c *client) Ping(ctx context.Context) error {
 	span, ctx := tracing.StartSpanFromContext(ctx, "ClickHouse.Ping")
 	defer span.End()
 
-	if c.conn != nil {
-		return c.conn.Ping(ctx)
-	}
-
 	if c.db != nil {
 		return c.db.PingContext(ctx)
 	}
 
-	return fmt.Errorf("no connection or database available to ping")
+	if c.conn != nil {
+		return c.conn.Ping(ctx)
+	}
+
+	return fmt.Errorf("no connection available to ping")
 }
 
 func (c *client) Exec(ctx context.Context, query string, args ...any) error {
 	span, ctx := tracing.StartSpanFromContext(ctx, "ClickHouse.Exec")
 	defer span.End()
 
+	if c.db != nil {
+		_, err := c.db.ExecContext(ctx, query, args...)
+		return err
+	}
+
 	if c.conn != nil {
 		return c.conn.Exec(ctx, query, args...)
 	}
 
-	_, err := c.db.ExecContext(ctx, query, args...)
-
-	return err
+	return fmt.Errorf("no connection available")
 }
 
 func (c *client) Select(ctx context.Context, dest any, query string, args ...any) error {
 	span, ctx := tracing.StartSpanFromContext(ctx, "ClickHouse.Select")
 	defer span.End()
 
+	if c.db != nil {
+		return c.db.SelectContext(ctx, dest, query, args...)
+	}
+
 	if c.conn != nil {
 		return c.conn.Select(ctx, dest, query, args...)
 	}
 
-	return c.db.SelectContext(ctx, dest, query, args...)
+	return fmt.Errorf("no connection available")
 }
 
 func (c *client) Get(ctx context.Context, dest any, query string, args ...any) error {
 	span, ctx := tracing.StartSpanFromContext(ctx, "ClickHouse.Get")
 	defer span.End()
 
-	return c.db.GetContext(ctx, dest, query, args...)
+	if c.db != nil {
+		return c.db.GetContext(ctx, dest, query, args...)
+	}
+
+	return fmt.Errorf("sqlx database connection required for Get operation")
 }
 
 func (c *client) AsyncInsert(ctx context.Context, query string, wait bool, args ...any) error {
@@ -272,6 +366,10 @@ func (c *client) AsyncInsert(ctx context.Context, query string, wait bool, args 
 
 	if !c.cfg.AsyncInsert {
 		return fmt.Errorf("async insert is not enabled")
+	}
+
+	if c.conn == nil {
+		return fmt.Errorf("native connection required for async insert")
 	}
 
 	options := clickhouse.Settings{
@@ -296,6 +394,10 @@ type Batch struct {
 func (c *client) PrepareBatch(ctx context.Context, query string) (*Batch, error) {
 	span, ctx := tracing.StartSpanFromContext(ctx, "ClickHouse.PrepareBatch")
 	defer span.End()
+
+	if c.conn == nil {
+		return nil, fmt.Errorf("native connection required for batch operations")
+	}
 
 	batch, err := c.conn.PrepareBatch(ctx, query)
 	if err != nil {
