@@ -144,8 +144,6 @@ func (c *client) connect() error {
 		c.db.SetConnMaxLifetime(c.cfg.ConnMaxLifetime)
 	}
 
-	log.Print(c.cfg.ConnMaxLifetime)
-
 	conn, err := clickhouse.Open(options)
 	if err != nil {
 		return fmt.Errorf("failed to open clickhouse connection: %w", err)
