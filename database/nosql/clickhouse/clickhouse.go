@@ -134,12 +134,6 @@ func (c *client) connect() error {
 		options.Settings["wait_for_async_insert"] = 1
 	}
 
-	c.db.SetMaxOpenConns(10)
-
-	c.db.SetMaxIdleConns(10)
-
-	c.db.SetConnMaxLifetime(10)
-
 	conn, err := clickhouse.Open(options)
 	if err != nil {
 		return fmt.Errorf("failed to open clickhouse connection: %w", err)
@@ -152,6 +146,12 @@ func (c *client) connect() error {
 	c.conn = conn
 
 	c.db = sqlx.NewDb(clickhouse.OpenDB(options), "clickhouse")
+
+	c.db.SetMaxOpenConns(10)
+
+	c.db.SetMaxIdleConns(10)
+
+	c.db.SetConnMaxLifetime(10)
 
 	return nil
 }
