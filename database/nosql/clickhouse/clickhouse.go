@@ -88,16 +88,39 @@ func NewFromDSN(dsn string) (Client, error) {
 		return nil, fmt.Errorf("failed to open clickhouse connection: %w", err)
 	}
 
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(5)
+	db.SetConnMaxLifetime(time.Hour)
+
 	if err := db.Ping(); err != nil {
 		return nil, fmt.Errorf("failed to ping clickhouse: %w", err)
 	}
 
 	return &client{
 		db: db,
+		cfg: Config{
+			MaxOpenConns:    10,
+			MaxIdleConns:    5,
+			ConnMaxLifetime: time.Hour,
+		},
 	}, nil
 }
 
 func (c *client) connect() error {
+
+	if c.cfg.MaxOpenConns <= 0 {
+		c.cfg.MaxOpenConns = 10
+	}
+	if c.cfg.MaxIdleConns <= 0 {
+		c.cfg.MaxIdleConns = 5
+	}
+	if c.cfg.ConnMaxLifetime <= 0 {
+		c.cfg.ConnMaxLifetime = time.Hour
+	}
+	if c.cfg.DialTimeout <= 0 {
+		c.cfg.DialTimeout = 10 * time.Second
+	}
+
 	options := &clickhouse.Options{
 		Addr: c.cfg.Addrs,
 		Auth: clickhouse.Auth{
@@ -145,14 +168,25 @@ func (c *client) connect() error {
 
 	c.conn = conn
 
-	c.db = sqlx.NewDb(clickhouse.OpenDB(options), "clickhouse")
+	sqlDB := clickhouse.OpenDB(options)
 
-	c.db.SetMaxOpenConns(10)
+	sqlDB.SetMaxOpenConns(c.cfg.MaxOpenConns)
+	sqlDB.SetMaxIdleConns(c.cfg.MaxIdleConns)
+	sqlDB.SetConnMaxLifetime(c.cfg.ConnMaxLifetime)
 
-	c.db.SetMaxIdleConns(10)
+	if err := sqlDB.Ping(); err != nil {
+		return fmt.Errorf("failed to ping clickhouse SQL DB: %w", err)
+	}
 
-	c.db.SetConnMaxLifetime(10)
+	c.db = sqlx.NewDb(sqlDB, "clickhouse")
 
+	log.WithFields(log.Fields{
+		"max_open_conns":    c.cfg.MaxOpenConns,
+		"max_idle_conns":    c.cfg.MaxIdleConns,
+		"conn_max_lifetime": c.cfg.ConnMaxLifetime,
+		"addrs":             c.cfg.Addrs,
+		"database":          c.cfg.Auth.Database,
+	}).Info("ClickHouse client connected successfully")
 	return nil
 }
 
