@@ -16,11 +16,11 @@ func init() {
 
 type (
 	manager struct {
-		store *clickhouse.Store
+		client clickhouse.Client
 	}
 
 	Config struct {
-		Store *clickhouse.Store
+		Store clickhouse.Client
 	}
 )
 

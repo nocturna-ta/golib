@@ -26,58 +26,6 @@ type Client interface {
 	Stats() driver.Stats
 }
 
-type Store struct {
-	Master Client
-	Slave  Client
-}
-
-type StoreConfig struct {
-	Master Config `json:"master" mapstructure:"master"`
-	Slave  Config `json:"slave" mapstructure:"slave"`
-}
-
-func NewStore(cfg *StoreConfig) (*Store, error) {
-	master, err := New(&cfg.Master)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create master client: %w", err)
-	}
-
-	slave, err := New(&cfg.Slave)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create slave client: %w", err)
-	}
-
-	return &Store{
-		Master: master,
-		Slave:  slave,
-	}, nil
-}
-
-func (s *Store) GetMaster() Client {
-	return s.Master
-}
-
-func (s *Store) GetSlave() Client {
-	return s.Slave
-}
-
-func (s *Store) Close() error {
-	var masterErr, slaveErr error
-
-	if s.Master != nil {
-		masterErr = s.Master.Close()
-	}
-	if s.Slave != nil {
-		slaveErr = s.Slave.Close()
-	}
-
-	if masterErr != nil {
-		return masterErr
-	}
-
-	return slaveErr
-}
-
 type client struct {
 	db       *sqlx.DB
 	conn     driver.Conn
@@ -199,6 +147,15 @@ func (c *client) connect() error {
 
 	c.db = sqlx.NewDb(clickhouse.OpenDB(options), "clickhouse")
 
+	if c.cfg.MaxOpenConns > 0 {
+		c.db.SetMaxOpenConns(c.cfg.MaxOpenConns)
+	}
+	if c.cfg.MaxIdleConns > 0 {
+		c.db.SetMaxIdleConns(c.cfg.MaxIdleConns)
+	}
+	if c.cfg.ConnMaxLifetime > 0 {
+		c.db.SetConnMaxLifetime(c.cfg.ConnMaxLifetime)
+	}
 	return nil
 }
 
