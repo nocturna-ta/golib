@@ -160,6 +160,11 @@ func (jr *FastRouter) HandleAttachment(method, path string, handler Handler[rest
 	handle(method, path, handler, jr, opts...)
 }
 
+func (jr *FastRouter) Use(path string, handlers fiber.Handler) {
+	fullPath := jr.Options.Prefix + path
+	jr.app.Use(fullPath, handlers)
+}
+
 func handle[T rest.Response](method, path string, handler Handler[T], jr *FastRouter, opts ...Option) {
 	fullPath := jr.Options.Prefix + path
 	jr.app.Add(method, fullPath, func(ctx *fiber.Ctx) error {
