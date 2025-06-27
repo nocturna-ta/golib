@@ -35,7 +35,7 @@ func New(opts *Options) (Client, error) {
 }
 
 // GetEthClient returns the underlying ethclient.Client
-func (e *ethClient) GetEthClient() *ethclient.Client {
+func (e *ethClient) GetEthClient() bind.ContractBackend {
 	return e.client
 }
 
