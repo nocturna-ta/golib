@@ -148,6 +148,66 @@ func (_m *Client) GetCallOpts(ctx context.Context) *bind.CallOpts {
 	return r0
 }
 
+// GetContractCaller provides a mock function with given fields: ctx
+func (_m *Client) GetContractCaller(ctx context.Context) *bind.ContractCaller {
+	ret := _m.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetContractCaller")
+	}
+
+	var r0 *bind.ContractCaller
+	if rf, ok := ret.Get(0).(func(context.Context) *bind.ContractCaller); ok {
+		r0 = rf(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*bind.ContractCaller)
+		}
+	}
+
+	return r0
+}
+
+// GetContractFilterer provides a mock function with given fields: ctx
+func (_m *Client) GetContractFilterer(ctx context.Context) *bind.ContractFilterer {
+	ret := _m.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetContractFilterer")
+	}
+
+	var r0 *bind.ContractFilterer
+	if rf, ok := ret.Get(0).(func(context.Context) *bind.ContractFilterer); ok {
+		r0 = rf(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*bind.ContractFilterer)
+		}
+	}
+
+	return r0
+}
+
+// GetContractTransactor provides a mock function with given fields: ctx
+func (_m *Client) GetContractTransactor(ctx context.Context) *bind.ContractTransactor {
+	ret := _m.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetContractTransactor")
+	}
+
+	var r0 *bind.ContractTransactor
+	if rf, ok := ret.Get(0).(func(context.Context) *bind.ContractTransactor); ok {
+		r0 = rf(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*bind.ContractTransactor)
+		}
+	}
+
+	return r0
+}
+
 // GetEthClient provides a mock function with no fields
 func (_m *Client) GetEthClient() bind.ContractBackend {
 	ret := _m.Called()

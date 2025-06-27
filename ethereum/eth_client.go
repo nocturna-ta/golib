@@ -268,3 +268,18 @@ func (e *ethClient) GetTransactOpts(ctx context.Context, privateKey string) (*bi
 
 	return auth, nil
 }
+
+func (e *ethClient) GetContractCaller(ctx context.Context) *bind.ContractCaller {
+	caller := bind.ContractCaller(e.client)
+	return &caller
+}
+
+func (e *ethClient) GetContractTransactor(ctx context.Context) *bind.ContractTransactor {
+	transactor := bind.ContractTransactor(e.client)
+	return &transactor
+}
+
+func (e *ethClient) GetContractFilterer(ctx context.Context) *bind.ContractFilterer {
+	filterer := bind.ContractFilterer(e.client)
+	return &filterer
+}

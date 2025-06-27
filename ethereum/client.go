@@ -29,4 +29,7 @@ type Client interface {
 	// Contract interactions
 	GetCallOpts(ctx context.Context) *bind.CallOpts
 	GetTransactOpts(ctx context.Context, privateKey string) (*bind.TransactOpts, error)
+	GetContractCaller(ctx context.Context) *bind.ContractCaller
+	GetContractTransactor(ctx context.Context) *bind.ContractTransactor
+	GetContractFilterer(ctx context.Context) *bind.ContractFilterer
 }
